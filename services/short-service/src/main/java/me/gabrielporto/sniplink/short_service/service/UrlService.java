@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import me.gabrielporto.sniplink.short_service.dto.CreateUrlRequest;
 import me.gabrielporto.sniplink.short_service.dto.UrlResponse;
 import me.gabrielporto.sniplink.short_service.entity.ShortenedUrl;
+import me.gabrielporto.sniplink.short_service.exception.AliasAlreadyExistsException;
 import me.gabrielporto.sniplink.short_service.exception.UrlNotFoundException;
 import me.gabrielporto.sniplink.short_service.repository.UrlRepository;
 
@@ -26,21 +27,22 @@ public class UrlService {
 
     @Transactional
     public UrlResponse createShortUrl(CreateUrlRequest request, UUID userId) {
-        if (hasCustomAlias(request)) {
+        if (hasAlias(request)) {
             return createWithAlias(request, userId);
         }
         return createWithGeneratedCode(request, userId);
     }
 
-    private boolean hasCustomAlias(CreateUrlRequest request) {
-        return request.customAlias() != null && !request.customAlias().isBlank();
+    private boolean hasAlias(CreateUrlRequest request) {
+        return request.alias() != null && !request.alias().isBlank();
     }
 
     private UrlResponse createWithAlias(CreateUrlRequest request, UUID userId) {
-        String alias = request.customAlias();
-        return urlRepository.findByShortCode(alias)
-                .map(this::toResponse)
-                .orElseGet(() -> save(request, alias, userId));
+        String alias = request.alias();
+        if (urlRepository.existsByShortCode(alias)) {
+            throw new AliasAlreadyExistsException(alias);
+        }
+        return save(request, alias, userId);
     }
 
     private UrlResponse createWithGeneratedCode(CreateUrlRequest request, UUID userId) {

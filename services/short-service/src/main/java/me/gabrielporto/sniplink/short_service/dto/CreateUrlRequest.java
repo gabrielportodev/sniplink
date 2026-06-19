@@ -13,9 +13,9 @@ public record CreateUrlRequest(
         String originalUrl,
         @Pattern(
                 regexp = "^[a-zA-Z0-9_-]{3,30}$",
-                message = "customAlias deve ter de 3 a 30 caracteres (letras, números, '-' ou '_')"
+                message = "alias deve ter de 3 a 30 caracteres (letras, números, '-' ou '_')"
         )
-        String customAlias,
+        String alias,
         LocalDateTime expiresAt
         ) {
 
