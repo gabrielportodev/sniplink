@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,19 +23,16 @@ import me.gabrielporto.sniplink.short_service.service.JwtService;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String AUTH_HEADER = "Authorization";
-    private static final String BEARER_PREFIX = "Bearer ";
-
     private final JwtService jwtService;
+    private final AuthCookieFactory authCookieFactory;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        String header = request.getHeader(AUTH_HEADER);
+        String token = extractToken(request);
 
-        if (header != null && header.startsWith(BEARER_PREFIX)) {
-            String token = header.substring(BEARER_PREFIX.length());
+        if (token != null) {
             try {
                 UUID userId = jwtService.extractUserId(token);
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -48,6 +46,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+        for (Cookie cookie : request.getCookies()) {
+            if (authCookieFactory.name().equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 
 }
