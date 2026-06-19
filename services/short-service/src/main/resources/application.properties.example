@@ -1,0 +1,35 @@
+# Name of the application
+spring.application.name=short-service
+
+# Port
+server.port=8082
+
+# Database Configuration
+spring.datasource.url=jdbc:postgresql://localhost:5432/sniplink_short_db
+spring.datasource.username=
+spring.datasource.password=
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA / Hibernate Configuration
+spring.jpa.open-in-view=false
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+
+# Base URL used to build the short links returned to the client
+app.base-url=http://localhost:8082
+
+# RabbitMQ connection
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=guest
+spring.rabbitmq.password=guest
+
+# RabbitMQ topology for click events
+app.rabbitmq.exchange=click.events.exchange
+app.rabbitmq.queue=click.events.queue
+app.rabbitmq.routing-key=click.events
+
+# JWT (secret must be at least 32 bytes for HS256)
+security.jwt.secret=
+security.jwt.expiration=86400000
