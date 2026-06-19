@@ -1,0 +1,32 @@
+# Name of the application
+spring.application.name=analytics-service
+
+# Port
+server.port=8083
+
+# Database Configuration (own database, separate from short-service)
+spring.datasource.url=jdbc:postgresql://localhost:5434/sniplink_analytics_db
+spring.datasource.username=
+spring.datasource.password=
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA / Hibernate Configuration
+spring.jpa.open-in-view=false
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+
+# RabbitMQ connection
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=guest
+spring.rabbitmq.password=guest
+
+# RabbitMQ topology for click events (must match short-service)
+app.rabbitmq.exchange=click.events.exchange
+app.rabbitmq.queue=click.events.queue
+app.rabbitmq.routing-key=click.events
+
+# Path to the MaxMind GeoLite2 City database (.mmdb).
+# Leave blank to disable GeoIP — every IP then resolves to "Unknown".
+app.geoip.database-path=
