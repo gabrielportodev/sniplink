@@ -1,0 +1,15 @@
+package me.gabrielporto.sniplink.short_service.dto;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record UrlResponse(
+        UUID id,
+        String originalUrl,
+        String shortCode,
+        String shortUrl,
+        LocalDateTime createdAt,
+        LocalDateTime expiresAt
+        ) {
+
+}
