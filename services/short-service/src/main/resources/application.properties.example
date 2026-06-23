@@ -19,6 +19,8 @@ spring.jpa.properties.hibernate.format_sql=false
 # Base URL used to build the short links returned to the client
 app.base-url=http://localhost:8082
 
+app.cors.allowed-origins=http://localhost:4200
+
 # RabbitMQ connection
 spring.rabbitmq.host=localhost
 spring.rabbitmq.port=5672
