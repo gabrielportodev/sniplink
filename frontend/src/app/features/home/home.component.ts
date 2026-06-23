@@ -192,7 +192,6 @@ export class HomeComponent {
       return;
     }
 
-
     this.loading.set(true);
     this.error.set(null);
     this.copied.set(false);
