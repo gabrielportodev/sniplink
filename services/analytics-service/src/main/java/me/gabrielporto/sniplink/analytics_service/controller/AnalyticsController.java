@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import me.gabrielporto.sniplink.analytics_service.dto.AnalyticsSummaryResponse;
 import me.gabrielporto.sniplink.analytics_service.dto.DailyClickResponse;
 import me.gabrielporto.sniplink.analytics_service.dto.DeviceStatsResponse;
+import me.gabrielporto.sniplink.analytics_service.dto.UrlAnalyticsResponse;
 import me.gabrielporto.sniplink.analytics_service.service.AnalyticsService;
 
 @RestController
@@ -21,33 +22,39 @@ public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
 
+    @GetMapping("/{shortCode}")
+    public UrlAnalyticsResponse overview(@PathVariable String shortCode,
+            @RequestParam(defaultValue = "30") int days) {
+        return analyticsService.overview(shortCode, days);
+    }
+
     @GetMapping("/{shortCode}/summary")
     public AnalyticsSummaryResponse summary(@PathVariable String shortCode,
-                                            @RequestParam(defaultValue = "30") int days) {
+            @RequestParam(defaultValue = "30") int days) {
         return analyticsService.summary(shortCode, days);
     }
 
     @GetMapping("/{shortCode}/daily")
     public List<DailyClickResponse> daily(@PathVariable String shortCode,
-                                          @RequestParam(defaultValue = "30") int days) {
+            @RequestParam(defaultValue = "30") int days) {
         return analyticsService.daily(shortCode, days);
     }
 
     @GetMapping("/{shortCode}/browsers")
     public List<DeviceStatsResponse> browsers(@PathVariable String shortCode,
-                                              @RequestParam(defaultValue = "30") int days) {
+            @RequestParam(defaultValue = "30") int days) {
         return analyticsService.browsers(shortCode, days);
     }
 
     @GetMapping("/{shortCode}/devices")
     public List<DeviceStatsResponse> devices(@PathVariable String shortCode,
-                                             @RequestParam(defaultValue = "30") int days) {
+            @RequestParam(defaultValue = "30") int days) {
         return analyticsService.devices(shortCode, days);
     }
 
     @GetMapping("/{shortCode}/countries")
     public List<DeviceStatsResponse> countries(@PathVariable String shortCode,
-                                               @RequestParam(defaultValue = "30") int days) {
+            @RequestParam(defaultValue = "30") int days) {
         return analyticsService.countries(shortCode, days);
     }
 

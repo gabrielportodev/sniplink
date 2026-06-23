@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import me.gabrielporto.sniplink.analytics_service.dto.AnalyticsSummaryResponse;
 import me.gabrielporto.sniplink.analytics_service.dto.DailyClickResponse;
 import me.gabrielporto.sniplink.analytics_service.dto.DeviceStatsResponse;
+import me.gabrielporto.sniplink.analytics_service.dto.UrlAnalyticsResponse;
 import me.gabrielporto.sniplink.analytics_service.repository.ClickEventRepository;
 
 @Service
@@ -45,6 +46,16 @@ public class AnalyticsService {
 
     public List<DeviceStatsResponse> countries(String shortCode, int days) {
         return repository.findCountryStats(shortCode, since(days));
+    }
+
+    public UrlAnalyticsResponse overview(String shortCode, int days) {
+        return new UrlAnalyticsResponse(
+                shortCode,
+                summary(shortCode, days).totalClicks(),
+                daily(shortCode, days),
+                devices(shortCode, days),
+                browsers(shortCode, days),
+                countries(shortCode, days));
     }
 
     private LocalDateTime since(int days) {

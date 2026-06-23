@@ -27,6 +27,4 @@ app.rabbitmq.exchange=click.events.exchange
 app.rabbitmq.queue=click.events.queue
 app.rabbitmq.routing-key=click.events
 
-# Path to the MaxMind GeoLite2 City database (.mmdb).
-# Leave blank to disable GeoIP — every IP then resolves to "Unknown".
-app.geoip.database-path=
+app.cors.allowed-origin=http://localhost:4200
