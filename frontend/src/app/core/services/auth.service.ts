@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, finalize, map, of, tap } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
-import { Credentials, User } from 'src/app/shared/models/user.model';
+import { User } from 'src/app/shared/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -14,16 +14,11 @@ export class AuthService {
   readonly user = this._user.asReadonly();
   readonly isAuthenticated = computed(() => this._user() !== null);
 
-  register(credentials: Credentials): Observable<User> {
-    return this.http
-      .post<User>(`${this.authUrl}/register`, credentials)
-      .pipe(tap((user) => this._user.set(user)));
-  }
-
-  login(credentials: Credentials): Observable<User> {
-    return this.http
-      .post<User>(`${this.authUrl}/login`, credentials)
-      .pipe(tap((user) => this._user.set(user)));
+  loginWith(provider: 'google' | 'github', redirect = '/dashboard'): void {
+    const target = `${environment.shortBaseUrl}/oauth2/authorization/${provider}`;
+    const url = new URL(target);
+    url.searchParams.set('redirect', redirect);
+    window.location.href = url.toString();
   }
 
   logout(): Observable<void> {
