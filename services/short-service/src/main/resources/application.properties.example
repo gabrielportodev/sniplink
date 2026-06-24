@@ -40,3 +40,17 @@ security.jwt.expiration=86400000
 security.cookie.name=access_token
 security.cookie.secure=false
 security.cookie.same-site=Lax
+
+# OAuth2 login (Google + GitHub).
+spring.security.oauth2.client.registration.google.client-id=
+spring.security.oauth2.client.registration.google.client-secret=
+spring.security.oauth2.client.registration.google.scope=openid,profile,email
+
+spring.security.oauth2.client.registration.github.client-id=
+spring.security.oauth2.client.registration.github.client-secret=
+spring.security.oauth2.client.registration.github.scope=read:user,user:email
+
+app.oauth2.redirect-uri=http://localhost:4200
+app.oauth2.failure-redirect=http://localhost:4200/login?error=oauth
+
+server.forward-headers-strategy=framework

@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -26,9 +24,14 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final CookieAuthorizationRequestRepository authorizationRequestRepository;
 
     @Value("${app.cors.allowed-origins}")
     private List<String> allowedOrigins;
+
+    @Value("${app.oauth2.failure-redirect}")
+    private String oauthFailureRedirect;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,6 +46,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/url/**", "/api/auth/me").authenticated()
                 .anyRequest().permitAll())
+                .oauth2Login(oauth -> oauth
+                .authorizationEndpoint(endpoint
+                        -> endpoint.authorizationRequestRepository(authorizationRequestRepository))
+                .successHandler(oAuth2LoginSuccessHandler)
+                .failureHandler((request, response, exception)
+                        -> response.sendRedirect(oauthFailureRedirect)))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -59,11 +68,6 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
 }

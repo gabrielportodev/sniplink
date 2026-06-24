@@ -21,11 +21,6 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
-    @ExceptionHandler(UsernameAlreadyExistsException.class)
-    public ProblemDetail handleUsernameExists(UsernameAlreadyExistsException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
-    }
-
     @ExceptionHandler(AliasAlreadyExistsException.class)
     public ProblemDetail handleAliasExists(AliasAlreadyExistsException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
