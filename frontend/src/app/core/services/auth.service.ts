@@ -15,8 +15,8 @@ export class AuthService {
   readonly isAuthenticated = computed(() => this._user() !== null);
 
   loginWith(provider: 'google' | 'github', redirect = '/dashboard'): void {
-    const target = `${environment.shortBaseUrl}/oauth2/authorization/${provider}`;
-    const url = new URL(target);
+    const base = environment.authBaseUrl || window.location.origin;
+    const url = new URL(`/oauth2/authorization/${provider}`, base);
     url.searchParams.set('redirect', redirect);
     window.location.href = url.toString();
   }

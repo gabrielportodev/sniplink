@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   apiUrl: '/api',
-  shortBaseUrl: 'https://sniplink.gabrielporto.me',
+  shortBaseUrl: 'https://link.gabrielporto.me',
+  authBaseUrl: '',
   analyticsApiUrl: '/analytics-api',
 };
