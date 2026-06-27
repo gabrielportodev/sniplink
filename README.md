@@ -25,9 +25,11 @@ sniplink/
 └── frontend/                 # dashboard (Angular)
 ```
 
-- **short-service** (porta `8082`) — encurta URLs, redireciona e cuida da
-  autenticação (JWT em cookie `HttpOnly`). A cada clique publica um evento no
-  RabbitMQ. Banco próprio: `sniplink_short_db`.
+- **short-service** (porta `8082`) — encurta URLs (com suporte a *alias*
+  customizado), redireciona e cuida da autenticação (JWT em cookie `HttpOnly`,
+  invisível ao JS). Tem rate limiting na criação de links e proteção global por
+  IP. A cada clique publica um evento no RabbitMQ. Banco próprio:
+  `sniplink_short_db`.
 - **analytics-service** (porta `8083`) — consome a fila de cliques, resolve o IP
   em país/cidade (API pública `ip-api.com`), parseia o User-Agent (Yauaa) e
   guarda tudo. Expõe a API REST de métricas que o dashboard consome. Banco
@@ -40,13 +42,25 @@ nada de banco compartilhado.
 
 ### Fluxo na prática
 
-1. Alguém acessa `seudominio.com/abc123`.
+1. Alguém acessa `sniplink.gabrielporto.me/abc123`.
 2. O short-service busca a URL original no Postgres pelo `shortCode`.
 3. Publica um evento de clique no RabbitMQ (shortCode, IP, User-Agent, timestamp).
 4. Responde o redirect — tudo em milissegundos.
 5. O analytics-service consome a fila, resolve o GeoIP, parseia o User-Agent e
    persiste o clique.
 6. O dashboard consome a API do analytics-service para montar os gráficos.
+
+## Funcionalidades
+
+- Encurtar URLs com `shortCode` gerado automaticamente ou *alias* customizado.
+- Redirecionamento (302) público e instantâneo, com publicação assíncrona do
+  clique no RabbitMQ.
+- Autenticação de usuários (registro/login) com JWT entregue em cookie
+  `HttpOnly`; cada link pertence ao seu dono.
+- Rate limiting na criação de links e proteção global por IP.
+- Analytics por link: total de cliques, cliques por dia, distribuição por
+  navegador, dispositivo e país — filtráveis por período (`?days=`).
+- Dashboard em Angular com gráficos interativos.
 
 ## Stack
 
