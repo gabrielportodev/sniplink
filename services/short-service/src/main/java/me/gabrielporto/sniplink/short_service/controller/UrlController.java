@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.gabrielporto.sniplink.short_service.dto.CreateUrlRequest;
 import me.gabrielporto.sniplink.short_service.dto.UrlResponse;
+import me.gabrielporto.sniplink.short_service.service.RateLimiter;
 import me.gabrielporto.sniplink.short_service.service.UrlService;
 
 @RestController
@@ -24,11 +25,13 @@ import me.gabrielporto.sniplink.short_service.service.UrlService;
 public class UrlController {
 
     private final UrlService urlService;
+    private final RateLimiter rateLimiter;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UrlResponse create(@Valid @RequestBody CreateUrlRequest request,
             @AuthenticationPrincipal UUID userId) {
+        rateLimiter.consume();
         return urlService.createShortUrl(request, userId);
     }
 
