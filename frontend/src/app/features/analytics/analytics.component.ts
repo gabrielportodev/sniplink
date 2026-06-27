@@ -93,7 +93,7 @@ import { DeviceChartComponent } from 'src/app/features/analytics/device-chart/de
 
           <app-click-chart [clicksPerDay]="data.clicksPerDay" />
 
-          <div class="grid gap-4 md:grid-cols-3">
+          <div class="mt-4 grid gap-4 md:grid-cols-3">
             <app-device-chart title="Dispositivos" [metrics]="data.devices" />
             <app-device-chart title="Navegadores" [metrics]="data.browsers" />
             <app-device-chart title="Países" [metrics]="data.countries" />
