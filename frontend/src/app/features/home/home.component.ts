@@ -8,21 +8,22 @@ import { UrlService } from 'src/app/core/services/url.service';
 import { ShortenedUrl } from 'src/app/shared/models/url.model';
 import { environment } from 'src/environments/environment';
 import { HeaderComponent } from 'src/app/shared/components/header/header.component';
+import { FooterComponent } from 'src/app/shared/components/footer/footer.component';
 
 interface Feature {
-  icon: string;
+  icon: string[];
   title: string;
   description: string;
 }
 
 @Component({
   selector: 'app-home',
-  imports: [ReactiveFormsModule, HeaderComponent],
+  imports: [ReactiveFormsModule, HeaderComponent, FooterComponent],
   template: `
-    <div class="min-h-screen bg-slate-950 text-slate-100">
+    <div class="flex min-h-screen flex-col bg-slate-950 text-slate-100">
       <app-header />
 
-      <main class="mx-auto max-w-2xl px-4 pb-24 pt-16 text-center">
+      <main class="mx-auto w-full max-w-2xl flex-1 px-4 pb-24 pt-16 text-center">
         <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
           Links longos? Resolve em um clique.
         </h1>
@@ -121,19 +122,53 @@ interface Feature {
         }
 
         @if (!auth.isAuthenticated()) {
-          <p class="mt-4 text-sm text-slate-500">📊 Crie uma conta para acompanhar seus cliques</p>
+          <p class="mt-4 flex items-center justify-center gap-2 text-sm text-slate-500">
+            <svg
+              class="h-4 w-4 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 3v18h18" />
+              <path d="m19 9-5 5-4-4-3 3" />
+            </svg>
+            Crie uma conta para acompanhar seus cliques
+          </p>
         }
 
         <div class="mt-14 grid gap-4 sm:grid-cols-3">
           @for (feature of features; track feature.title) {
             <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-center">
-              <div class="text-2xl">{{ feature.icon }}</div>
+              <div
+                class="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400"
+              >
+                <svg
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  @for (path of feature.icon; track path) {
+                    <path [attr.d]="path" />
+                  }
+                </svg>
+              </div>
               <h3 class="mt-2 font-semibold text-slate-100">{{ feature.title }}</h3>
               <p class="mt-1 text-sm text-slate-400">{{ feature.description }}</p>
             </div>
           }
         </div>
       </main>
+
+      <app-footer />
     </div>
   `,
 })
@@ -155,9 +190,21 @@ export class HomeComponent {
   });
 
   protected readonly features: Feature[] = [
-    { icon: '⚡', title: 'Rápido', description: 'Redirect em milissegundos' },
-    { icon: '🔀', title: 'Analytics', description: 'Cliques, dispositivos, países em tempo real' },
-    { icon: '🔓', title: 'Sem cadastro', description: 'Encurte agora, crie conta quando quiser' },
+    {
+      icon: ['m13 2-8 11h6l-2 9 8-11h-6z'],
+      title: 'Rápido',
+      description: 'Redirect em milissegundos',
+    },
+    {
+      icon: ['M3 3v18h18', 'm19 9-5 5-4-4-3 3'],
+      title: 'Analytics',
+      description: 'Cliques, dispositivos, países em tempo real',
+    },
+    {
+      icon: ['M7 11V8a5 5 0 0 1 9.58-2', 'M5 11h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z'],
+      title: 'Sem cadastro',
+      description: 'Encurte agora, crie conta quando quiser',
+    },
   ];
 
   protected readonly form = this.fb.nonNullable.group({
@@ -199,6 +246,7 @@ export class HomeComponent {
     this.urlService.create({ originalUrl, alias: alias || null }).subscribe({
       next: (url) => {
         this.created.set(url);
+        this.form.reset();
         this.loading.set(false);
       },
       error: (err: HttpErrorResponse) => {

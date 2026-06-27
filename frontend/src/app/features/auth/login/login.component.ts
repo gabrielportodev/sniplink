@@ -1,14 +1,35 @@
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { AuthService } from 'src/app/core/services/auth.service';
 import { LogoComponent } from 'src/app/shared/components/logo/logo.component';
 
+type OAuthProvider = 'google' | 'github';
+
 @Component({
   selector: 'app-login',
-  imports: [LogoComponent],
+  imports: [LogoComponent, RouterLink],
   template: `
-    <div class="grid min-h-screen bg-slate-950 text-slate-100 lg:grid-cols-2">
+    <div class="relative grid min-h-screen bg-slate-950 text-slate-100 lg:grid-cols-2">
+      <a
+        routerLink="/"
+        aria-label="Voltar para a tela inicial"
+        class="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-800 hover:text-white sm:left-6 sm:top-6"
+      >
+        <svg
+          class="h-6 w-6"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+      </a>
+
       <section class="flex items-center justify-center px-6 py-12 sm:px-10">
         <div class="w-full max-w-md space-y-10">
           <app-logo size="h-8 w-8" [large]="true" />
@@ -24,11 +45,23 @@ import { LogoComponent } from 'src/app/shared/components/logo/logo.component';
 
           <div class="space-y-4">
             <button
-              class="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-5 py-3.5 text-base font-medium text-slate-100 transition hover:border-slate-600 hover:bg-slate-800"
+              class="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-5 py-3.5 text-base font-medium text-slate-100 transition hover:border-slate-600 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
               type="button"
+              [disabled]="loadingProvider() !== null"
               (click)="loginWith('google')"
             >
-              <svg class="h-6 w-6" viewBox="0 0 24 24" aria-hidden="true">
+              @if (loadingProvider() === 'google') {
+                <svg
+                  class="h-6 w-6 animate-spin text-slate-300"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.4 0 0 5.4 0 12h4z" />
+                </svg>
+              } @else {
+                <svg class="h-6 w-6" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1Z"
@@ -45,20 +78,34 @@ import { LogoComponent } from 'src/app/shared/components/logo/logo.component';
                   fill="#EA4335"
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38Z"
                 />
-              </svg>
+                </svg>
+              }
               Continuar com Google
             </button>
 
             <button
-              class="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-5 py-3.5 text-base font-medium text-slate-100 transition hover:border-slate-600 hover:bg-slate-800"
+              class="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-5 py-3.5 text-base font-medium text-slate-100 transition hover:border-slate-600 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
               type="button"
+              [disabled]="loadingProvider() !== null"
               (click)="loginWith('github')"
             >
-              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M12 1.5a10.5 10.5 0 0 0-3.32 20.46c.53.1.72-.23.72-.5v-1.76c-2.92.63-3.54-1.41-3.54-1.41-.48-1.21-1.17-1.54-1.17-1.54-.96-.65.07-.64.07-.64 1.06.08 1.62 1.09 1.62 1.09.94 1.61 2.47 1.15 3.07.88.1-.68.37-1.15.67-1.41-2.33-.27-4.78-1.17-4.78-5.18 0-1.15.41-2.08 1.08-2.82-.11-.27-.47-1.34.1-2.79 0 0 .88-.28 2.88 1.07a10 10 0 0 1 5.24 0c2-1.35 2.88-1.07 2.88-1.07.57 1.45.21 2.52.1 2.79.68.74 1.08 1.67 1.08 2.82 0 4.02-2.46 4.9-4.8 5.16.38.33.71.97.71 1.96v2.9c0 .28.19.61.73.5A10.5 10.5 0 0 0 12 1.5Z"
-                />
-              </svg>
+              @if (loadingProvider() === 'github') {
+                <svg
+                  class="h-6 w-6 animate-spin text-slate-300"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.4 0 0 5.4 0 12h4z" />
+                </svg>
+              } @else {
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12 1.5a10.5 10.5 0 0 0-3.32 20.46c.53.1.72-.23.72-.5v-1.76c-2.92.63-3.54-1.41-3.54-1.41-.48-1.21-1.17-1.54-1.17-1.54-.96-.65.07-.64.07-.64 1.06.08 1.62 1.09 1.62 1.09.94 1.61 2.47 1.15 3.07.88.1-.68.37-1.15.67-1.41-2.33-.27-4.78-1.17-4.78-5.18 0-1.15.41-2.08 1.08-2.82-.11-.27-.47-1.34.1-2.79 0 0 .88-.28 2.88 1.07a10 10 0 0 1 5.24 0c2-1.35 2.88-1.07 2.88-1.07.57 1.45.21 2.52.1 2.79.68.74 1.08 1.67 1.08 2.82 0 4.02-2.46 4.9-4.8 5.16.38.33.71.97.71 1.96v2.9c0 .28.19.61.73.5A10.5 10.5 0 0 0 12 1.5Z"
+                  />
+                </svg>
+              }
               Continuar com GitHub
             </button>
           </div>
@@ -79,7 +126,15 @@ export class LoginComponent {
   private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
 
-  loginWith(provider: 'google' | 'github'): void {
+  protected readonly loadingProvider = signal<OAuthProvider | null>(null);
+
+  loginWith(provider: OAuthProvider): void {
+    if (this.loadingProvider() !== null) {
+      return;
+    }
+
+    this.loadingProvider.set(provider);
+
     const params = this.route.snapshot.queryParamMap;
     const redirect = params.get('redirect') ?? '/dashboard';
     const originalUrl = params.get('originalUrl');
